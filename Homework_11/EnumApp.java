@@ -1,24 +1,24 @@
 package Homework_11;
 
 import java.time.DayOfWeek;
-import java.util.Calendar;
-import java.util.Date;
+import java.util.Random;
 
 public class EnumApp {
-    public static Day d;
 
     public static void main(String[] args) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(new Date());
-        DayOfWeek today = convertIntToDay(calendar.get(Calendar.WEDNESDAY));
-        Object workingHours = new Object();
-        System.out.println(d.getNumberOfDay() + "." + d + "-" +d.getWorkingHours());
-    }
-
-    private static DayOfWeek convertIntToDay(int i) {
-        return null;
+        Random r = new Random();
+        int todayDay = r.nextInt(8);
+        Day today = Day.valueOf(DayOfWeek.of(todayDay).toString());
+        System.out.println(today);
+        int workingHoursLeft = 8;
+        Day days[] = Day.values();
+        for (int i = today.getNumberOfDay(); i < 8; i++) {
+            workingHoursLeft += days[i - 1].getWorkingHours();
+            System.out.println(workingHoursLeft);
+        }
     }
 }
+
 
 
 

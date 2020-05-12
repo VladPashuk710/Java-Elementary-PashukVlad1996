@@ -6,8 +6,8 @@ public enum Day {
     WEDNESDAY(3,8),
     THURSDAY(4,8),
     FRIDAY(5,6),
-    SATURDAY(6,0),
-    SUNDAY(7,0);
+    SATURDAY(6,8),
+    SUNDAY(7,8);
     public int numberOfDay;
     public int workingHours;
 
@@ -20,15 +20,8 @@ public enum Day {
         return numberOfDay;
     }
 
-    public void setNumberOfDay(int numberOfDay) {
-        this.numberOfDay = numberOfDay;
-    }
-
     public int getWorkingHours() {
         return workingHours;
     }
 
-    public void setWorkingHours(int workingHours) {
-        this.workingHours = workingHours;
-    }
 }
