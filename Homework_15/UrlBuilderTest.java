@@ -1,9 +1,9 @@
-package Homework_16;
+package Homework_15;
 
 import Homework_10.MyUrlBuilder;
+import org.hamcrest.core.StringEndsWith;
 import org.junit.Before;
 import org.junit.Test;
-
 import static org.junit.Assert.assertEquals;
 
 public class UrlBuilderTest {
@@ -22,7 +22,7 @@ public class UrlBuilderTest {
     }
 
     @Test
-    public void TestIsEmpty() {
+    public void testIsEmpty() {
 
         assertEquals("Not found param", "1", protocol.isEmpty());
         assertEquals("Not found param", "2", port.isEmpty());
@@ -31,11 +31,22 @@ public class UrlBuilderTest {
     }
 
     @Test
-    public void TestStartsWith() {
+    public void testStartsWith() {
 
-        assertEquals("Incorrect of param", "1", protocol.endsWith("://"));
         assertEquals("Incorrect of param", "2", port.startsWith(":"));
         assertEquals("Incorrect of param", "3", path.startsWith("/"));
         assertEquals("Incorrect of param", "4", params.startsWith("?"));
     }
+
+    @Test
+    public void testEndsWith() {
+
+        assertEquals("Incorrect of param", "1", protocol.endsWith("//"));
+    }
+
+    @Test
+    public void testIsBlank() {
+        assertEquals("Incorrect of param", "5", domain.isBlank());
+    }
+
 }
