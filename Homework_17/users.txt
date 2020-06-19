@@ -1,0 +1,4 @@
+1, admin, admin@gmail.com, password
+2, vlad, vlad@test.com, vladiksss1996
+3, vladik, vladik@mail.org, 123456
+4, vladislav, vladislav@mail.ua, okfdjkd
