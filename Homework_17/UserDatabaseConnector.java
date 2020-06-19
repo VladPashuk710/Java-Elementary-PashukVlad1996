@@ -1,48 +1,141 @@
 package Homework_17;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.Properties;
+import lecture_23.User;
+import lecture_23.UserNotFoundException;
+
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class UserDatabaseConnector {
 
-    private String filePath;
-    private String dbUrl;
-    private String dataSource;
-
     private static UserDatabaseConnector instance;
+    private static final String dbUrl = "jdbc:sqlite:mysb.sdb";
 
     private UserDatabaseConnector() {
-
-        try {
-            Properties props = new Properties();
-            props.load(new FileReader(new File("src/resources/data.properties")));
-            filePath = props.getProperty("filePath");
-            dbUrl = props.getProperty("dbUrl");
-            dataSource = props.getProperty("dataSource");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
     }
 
     public static UserDatabaseConnector getInstance() {
-        if(instance == null)
+        if (instance == null) {
             instance = new UserDatabaseConnector();
+        }
         return instance;
     }
 
-    public String getFilePath() {
-        return filePath;
+    public void insert(User user) throws SQLException {
+        String insertQuery = "INSERT INTO users(id, username, email, password) VALUES(?,?,?,?);";
+
+        try (Connection connection = DriverManager.getConnection(dbUrl)) {
+            try (PreparedStatement statement = connection.prepareStatement(insertQuery)) {
+                statement.setString(1, user.getId());
+                statement.setString(2, user.getUsername());
+                statement.setString(3, user.getEmail());
+                statement.setString(4, user.getPassword());
+
+                statement.execute();
+            } catch (SQLException ex) {
+                throw new RuntimeException("Insertion failed", ex);
+            } finally {
+                try {
+
+                    if (connection != null)
+                        connection.close();
+                } catch (SQLException ex) {
+                    throw new RuntimeException("Insertion failed", ex);
+                }
+            }
+        }
     }
 
-    public String getDbUrl() {
-        return dbUrl;
+    public void update(User user) throws SQLException {
+        String updateSql = "UPDATE users SET id = ?, username = ?, email = ?, password = ? WHERE id = ?";
+        try (Connection connection = DriverManager.getConnection(dbUrl)) {
+            try (PreparedStatement statement = connection.prepareStatement(updateSql)) {
+                statement.setString(1, user.getId());
+                statement.setString(2, user.getUsername());
+                statement.setString(3, user.getEmail());
+                statement.setString(4, user.getPassword());
+                statement.execute();
+            } catch (SQLException ex) {
+                throw new RuntimeException("Insertion failed", ex);
+            }
+        } catch (SQLException ex) {
+            throw new RuntimeException("Insertion failed", ex);
+        }
     }
 
-    public String getDataSource() {
-        return dataSource;
+    public void delete(String id) {
+        String deleteSql = "DELETE FROM users WHERE id=? ;";
+        try (Connection connection = DriverManager.getConnection(dbUrl)) {
+
+            try (PreparedStatement statement = connection.prepareStatement(deleteSql)) {
+                statement.setString(1, id);
+                statement.execute();
+            } catch (SQLException ex) {
+                throw new RuntimeException("Insertion failed", ex);
+            }
+        } catch (SQLException ex) {
+            throw new RuntimeException("Insertion failed", ex);
+        }
     }
 
+    public User findBy(String param, String value) {
+        String selectSql = "SELECT FROM users WHERE id=? ;";
+        try (Connection connection = DriverManager.getConnection(dbUrl)) {
+
+            try (PreparedStatement statement = connection.prepareStatement(selectSql)) {
+                statement.setString(1, param);
+                statement.setString(2, value);
+                ResultSet rs = statement.executeQuery("SELECT * FROM users;");
+                if (rs.next()) {
+                    return new User(rs.getString("id"),
+                            rs.getString("userName"),
+                            rs.getString("email"),
+                            rs.getString("password"));
+                } else {
+                    throw new UserNotFoundException("User with" + param + "and value" + value + "was not found");
+                }
+
+            } catch (SQLException ex) {
+                throw new RuntimeException("Insertion failed", ex);
+            }
+        } catch (SQLException ex) {
+            throw new RuntimeException("Insertion failed", ex);
+        }
+    }
+
+    public List<User> getAll() throws SQLException {
+
+        try (Connection connection = DriverManager.getConnection(dbUrl)) {
+
+            try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM users;")) {
+                List<User> users = new ArrayList<>();
+                ResultSet rs = statement.executeQuery("SELECT * FROM users;");
+
+                while (rs.next()) {
+                    users.add(
+                            new User(rs.getString("id"),
+                                    rs.getString("userName"),
+                                    rs.getString("email"),
+                                    rs.getString("password")));
+                }
+                return users;
+            } catch (SQLException ex) {
+                throw new RuntimeException("Insertion failed", ex);
+            }
+        } catch (SQLException ex) {
+            throw new RuntimeException("Insertion failed", ex);
+        }
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
