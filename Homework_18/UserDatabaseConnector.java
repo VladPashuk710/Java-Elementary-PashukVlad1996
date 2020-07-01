@@ -1,4 +1,4 @@
-package Homework_17;
+package Homework_18;
 
 import lecture_23.User;
 import lecture_23.UserNotFoundException;
@@ -6,23 +6,24 @@ import lecture_23.UserNotFoundException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class UserDatabaseConnector {
 
-    private static UserDatabaseConnector instance;
+    private static Homework_18.UserDatabaseConnector instance;
     private static final String dbUrl = "jdbc:sqlite:mysb.sdb";
 
     private UserDatabaseConnector() {
     }
 
-    public static UserDatabaseConnector getInstance() {
+    public static Homework_18.UserDatabaseConnector getInstance() {
         if (instance == null) {
-            instance = new UserDatabaseConnector();
+            instance = new Homework_18.UserDatabaseConnector();
         }
         return instance;
     }
 
-    public void insert(User user) throws SQLException {
+     public void insert(User user) throws SQLException {
         String insertQuery = "INSERT INTO users(id, username, email, password) VALUES(?,?,?,?);";
 
         try (Connection connection = DriverManager.getConnection(dbUrl)) {
@@ -79,7 +80,7 @@ public class UserDatabaseConnector {
         }
     }
 
-    public User findBy(String param, String value) {
+    public Optional<User> findBy(String param, String value) {
         String selectSql = "SELECT FROM users WHERE id=? ;";
         try (Connection connection = DriverManager.getConnection(dbUrl)) {
 
@@ -87,15 +88,15 @@ public class UserDatabaseConnector {
                 statement.setString(1, param);
                 statement.setString(2, value);
                 ResultSet rs = statement.executeQuery("SELECT * FROM users;");
-                if (rs.next()) {
-                    return new User(rs.getString("id"),
+                if (rs.getRow() == 0) {
+                    return Optional.empty();
+                } else {
+                    rs.next();
+                    return Optional.ofNullable(new User(rs.getString("id"),
                             rs.getString("userName"),
                             rs.getString("email"),
-                            rs.getString("password"));
-                } else {
-                    throw new UserNotFoundException("User with" + param + "and value" + value + "was not found");
+                            rs.getString("password")));
                 }
-
             } catch (SQLException ex) {
                 throw new RuntimeException("Insertion failed", ex);
             }
@@ -128,14 +129,3 @@ public class UserDatabaseConnector {
         }
     }
 }
-
-
-
-
-
-
-
-
-
-
-
